@@ -1,21 +1,29 @@
 import cv2
-import numpy as np
+import matplotlib.pyplot as plt
 
-def detect_dust(image_path):
-    img = cv2.imread(image_path)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+image_path = 'dust.png'
+original_img = cv2.imread(image_path)
 
-    # Apply Gaussian Blur
-    blur = cv2.GaussianBlur(gray, (9, 9), 0)
+if original_img is None:
+    print(f"Error: Could not load image from {image_path}. Check the file path.")
+else:
+    kernel_size = (41, 41)
+    blurred_img = cv2.GaussianBlur(original_img, kernel_size, 0)
 
-    # Find difference (dust areas)
-    diff = cv2.absdiff(gray, blur)
-    _, dust_mask = cv2.threshold(diff, 30, 255, cv2.THRESH_BINARY)
+    original_rgb = cv2.cvtColor(original_img, cv2.COLOR_BGR2RGB)
+    blurred_rgb = cv2.cvtColor(blurred_img, cv2.COLOR_BGR2RGB)
 
-    # Display
-    cv2.imshow("Original", img)
-    cv2.imshow("Dust Mask", dust_mask)
-    cv2.waitKey(1000)
-    cv2.destroyAllWindows()
+    plt.figure(figsize=(12, 6))
 
-    return gray, blur, dust_mask, img
+    plt.subplot(1, 2, 1)
+    plt.imshow(original_rgb)
+    plt.title('Original Image')
+    plt.axis('off')
+
+    plt.subplot(1, 2, 2)
+    plt.imshow(blurred_rgb)
+    plt.title(f'Gaussian Blurred Image (Kernel: {kernel_size[0]}x{kernel_size[1]})')
+    plt.axis('off')
+
+    plt.tight_layout()
+    plt.show()
